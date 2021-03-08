@@ -34,6 +34,7 @@ namespace server{
                     else if(recievedText=="l"){ text ="Load avg: " + File.ReadAllText( "/proc/loadavg" );}
                     else text ="Sorry, could not parse command :/ ";
                     
+                    Console.WriteLine("Replying with: " + text);
                     listener.Send(Encoding.ASCII.GetBytes(text),text.Length,listenEndPoint);
 
                     //string iptext=listenEndPoint.ToString();
