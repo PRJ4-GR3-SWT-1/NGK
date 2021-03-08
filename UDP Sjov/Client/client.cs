@@ -25,9 +25,12 @@ namespace client{
         }
         static void Main(string[] args){
              //derived from https://riptutorial.com/csharp/example/32222/basic-udp-client
+            if(args.Length<2) {
+				Console.WriteLine("Husk argumenter ... *Skuffet*");
+				return ;}
 
-            byte[] data = Encoding.ASCII.GetBytes("u");
-            string ipAddress = "10.0.0.1";
+            byte[] data = Encoding.ASCII.GetBytes(args[1]);
+            string ipAddress = args[0];
             int sendPort = 9000;
             try
             {
@@ -39,15 +42,16 @@ namespace client{
                     client.Connect(ep);
                     Console.WriteLine("Connected?");
                     client.Send(data, data.Length);
-                    Console.WriteLine("Data transmitted ep =" + ep.ToString());
+                    Console.WriteLine("Data transmitted to server with ep:" + ep.ToString());
 
-                    /*IPEndPoint receiveEP = null;
-                    byte[] receivedData = client.Receive(ref receiveEP);
+                    //IPEndPoint receiveEP = new IPEndPoint(IPAddress.Any, sendPort);
+                    byte[] receivedData = client.Receive(ref ep);
+                    Console.WriteLine("Data recieved: ");
                     string recievedText=Encoding.ASCII.GetString(receivedData);
-                    Console.WriteLine(recievedText);*/
+                    Console.WriteLine(recievedText);
 
                     
-                    UdpReceive();
+                    //UdpReceive();
                 }
             }
             catch (Exception ex)

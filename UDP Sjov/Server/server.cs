@@ -27,15 +27,18 @@ namespace server{
                     Console.WriteLine("Decoded data is:");
                     string recievedText=Encoding.ASCII.GetString(receivedData);
                     recievedText=recievedText.ToLower();
-                    Console.WriteLine(recievedText); //should be "Hello World" sent from above client
+                    Console.WriteLine(recievedText); //should be "U" or "L" sent from  client
                     
                     string text;
-                    if(recievedText=="u") text = File.ReadAllText( "/proc/uptime" );//From https://stackoverflow.com/a/42110779
-                    else text ="Error";
+                    if(recievedText=="u") {text = "Uptime: " + File.ReadAllText( "/proc/uptime" );}//From https://stackoverflow.com/a/42110779
+                    else if(recievedText=="l"){ text ="Load avg: " + File.ReadAllText( "/proc/loadavg" );}
+                    else text ="Sorry, could not parse command :/ ";
                     
-                    string iptext=listenEndPoint.ToString();
-                    string[] arr=iptext.Split(":");
-                    sendData(text,new IPEndPoint(IPAddress.Parse( arr[0]),9001));
+                    listener.Send(Encoding.ASCII.GetBytes(text),text.Length,listenEndPoint);
+
+                    //string iptext=listenEndPoint.ToString();
+                    //string[] arr=iptext.Split(":");
+                    //sendData(text, listenEndPoint);
                     
                     
 
@@ -50,10 +53,10 @@ namespace server{
                 using (var client = new UdpClient())
                 {
                     Console.WriteLine("Created UdpClient for sending");
-                    client.Connect(ep);
+                    //client.Connect(ep);
                     Console.WriteLine("Connected?");
                     client.Send(data, data.Length);
-                    Console.WriteLine("Data transmitted");
+                    Console.WriteLine("Data transmitted to ep =" + ep.ToString());
                 }
             }
             catch (Exception ex)
