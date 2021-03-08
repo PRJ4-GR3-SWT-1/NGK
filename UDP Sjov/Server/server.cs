@@ -14,10 +14,11 @@ namespace server{
             using(UdpClient listener = new UdpClient(listenPort))
             {
                 Console.WriteLine("UDP client started");
-                IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Any, listenPort);
+                
                 
                 while(!done)
                 {
+                    IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Any, listenPort);
                     Console.WriteLine("Starting listening");
                     byte[] receivedData = listener.Receive(ref listenEndPoint);
 
@@ -32,9 +33,9 @@ namespace server{
                     if(recievedText=="u") text = File.ReadAllText( "/proc/uptime" );//From https://stackoverflow.com/a/42110779
                     else text ="Error";
                     
-                    iptext=listenEndPoint.ToString();
+                    string iptext=listenEndPoint.ToString();
                     string[] arr=iptext.Split(":");
-                    sendData(text,new IPEndPoint(arr[0]+":9000"));
+                    sendData(text,new IPEndPoint(IPAddress.Parse( arr[0]),9001));
                     
                     
 

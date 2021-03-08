@@ -5,6 +5,24 @@ using System.Net.Sockets;
 
 namespace client{
     class Client{
+        static void UdpReceive(){
+            int listenPort = 9001;
+            using(UdpClient listener = new UdpClient(listenPort))
+            {
+                Console.WriteLine("UDP listen client started");
+                IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Any, listenPort);
+            
+                Console.WriteLine("Starting listening");
+                byte[] receivedData = listener.Receive(ref listenEndPoint);
+
+                Console.WriteLine("Received broadcast message from client {0}", listenEndPoint.ToString());
+
+                Console.WriteLine("Decoded data is:");
+                string recievedText=Encoding.ASCII.GetString(receivedData);
+                Console.WriteLine(recievedText); //should be "Uptime" sent from above client
+               
+            }
+        }
         static void Main(string[] args){
              //derived from https://riptutorial.com/csharp/example/32222/basic-udp-client
 
@@ -22,10 +40,14 @@ namespace client{
                     Console.WriteLine("Connected?");
                     client.Send(data, data.Length);
                     Console.WriteLine("Data transmitted ep =" + ep.ToString());
-                    byte[] receivedData = client.Receive(ref ep);
-                    string recievedText=Encoding.ASCII.GetString(receivedData);
 
-                    Console.WriteLine(recievedText);
+                    /*IPEndPoint receiveEP = null;
+                    byte[] receivedData = client.Receive(ref receiveEP);
+                    string recievedText=Encoding.ASCII.GetString(receivedData);
+                    Console.WriteLine(recievedText);*/
+
+                    
+                    UdpReceive();
                 }
             }
             catch (Exception ex)
