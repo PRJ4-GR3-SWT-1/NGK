@@ -18,54 +18,31 @@ namespace server{
                 
                 while(!done)
                 {
+                    //Receiving message:
                     IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Any, listenPort);
                     Console.WriteLine("Starting listening");
                     byte[] receivedData = listener.Receive(ref listenEndPoint);
 
-                    Console.WriteLine("Received broadcast message from client {0}", listenEndPoint.ToString());
+                    Console.WriteLine("Received broadcast message from client " + listenEndPoint.ToString());
 
                     Console.WriteLine("Decoded data is:");
                     string recievedText=Encoding.ASCII.GetString(receivedData);
                     recievedText=recievedText.ToLower();
                     Console.WriteLine(recievedText); //should be "U" or "L" sent from  client
                     
-                    string text;
-                    if(recievedText=="u") {text = "Uptime: " + File.ReadAllText( "/proc/uptime" );}//From https://stackoverflow.com/a/42110779
-                    else if(recievedText=="l"){ text ="Load avg: " + File.ReadAllText( "/proc/loadavg" );}
-                    else text ="Sorry, could not parse command :/ ";
+                    //Finished Receiving. Starting sending:
+                    string returnText;
+                    if(recievedText=="u") {returnText = "Uptime: " + File.ReadAllText( "/proc/uptime" );}//From https://stackoverflow.com/a/42110779
+                    else if(recievedText=="l"){ returnText ="Load avg: " + File.ReadAllText( "/proc/loadavg" );}
+                    else returnText ="Sorry, could not parse command :/ ";
                     
-                    Console.WriteLine("Replying with: " + text);
-                    listener.Send(Encoding.ASCII.GetBytes(text),text.Length,listenEndPoint);
-
-                    //string iptext=listenEndPoint.ToString();
-                    //string[] arr=iptext.Split(":");
-                    //sendData(text, listenEndPoint);
-                    
-                    
+                    Console.WriteLine("Replying with: " + returnText);
+                    listener.Send(Encoding.ASCII.GetBytes(returnText),returnText.Length,listenEndPoint);
 
                 }
             }
         } 
 
-       static void sendData(string text, IPEndPoint ep){
-            byte[] data = Encoding.ASCII.GetBytes(text);
-            try
-            {
-                using (var client = new UdpClient())
-                {
-                    Console.WriteLine("Created UdpClient for sending");
-                    //client.Connect(ep);
-                    Console.WriteLine("Connected?");
-                    client.Send(data, data.Length);
-                    Console.WriteLine("Data transmitted to ep =" + ep.ToString());
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-
-            
-        }
+       
     }
 }
