@@ -95,7 +95,7 @@ namespace tcp
 		/// </param>
 		private void sendFile (String fileName, long fileSize, NetworkStream io)
 		{
-			using (BinaryReader reader = new BinaryReader(new FileStream(fileName, FileMode.Open,FileAccess.Read)))
+			using (BinaryReader reader = new BinaryReader(new FileStream(fileName, FileMode.Open,FileAccess.Read)))//https://stackoverflow.com/a/8678928
         	{
 			byte[] chunk=new byte[1000];
 			//var base64 = Convert.ToBase64String(fileContents);
