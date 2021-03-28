@@ -36,7 +36,7 @@ namespace tcp
 			//SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
 			
 			//TcpListener serverSocket = new TcpListener(PORT);
-			 serverSocket = new TcpListener(IPAddress.Parse("10.0.0.1"),PORT);
+			 serverSocket = new TcpListener(IPAddress.Any,PORT);
 
 
 			
@@ -95,15 +95,23 @@ namespace tcp
 		/// </param>
 		private void sendFile (String fileName, long fileSize, NetworkStream io)
 		{
-			byte[] fileContents = File.ReadAllBytes(fileName);
+			using (BinaryReader reader = new BinaryReader(new FileStream(fileName, FileMode.Open,FileAccess.Read)))
+        	{
+			byte[] chunk=new byte[1000];
 			//var base64 = Convert.ToBase64String(fileContents);
 			int i;
 			for( i=0; i<fileSize-1000;i+=1000)
 			{
-				Console.WriteLine(i.ToString());
-				io.Write(fileContents, i, 1000);
+				Console.WriteLine("Readning and sending. count="+i.ToString());
+				reader.BaseStream.Seek(i, SeekOrigin.Begin);
+    			reader.Read(chunk, 0, 1000);
+				io.Write(chunk, 0, 1000);
 			}
-			io.Write(fileContents, i, (int)(fileSize%1000));
+			Console.WriteLine("Readning and sending. count="+i.ToString());
+			reader.BaseStream.Seek(i, SeekOrigin.Begin);
+			reader.Read(chunk,0,(int)(fileSize%1000));
+			io.Write(chunk, 0, (int)(fileSize%1000));
+			}
 		}
 
 		/// <summary>
